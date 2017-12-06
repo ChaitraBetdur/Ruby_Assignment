@@ -1,70 +1,45 @@
+$LOAD_PATH << '.'
+
 require "yaml"
 require 'csv'
 require_relative 'person'
 require_relative 'address'
-class AddressBook
 
+require "validate"
+
+class AddressBook
+include Validate
+  puts Validate::VAR
    @@contacts=Array.new
 
    def open
      if File.exist?("contacts.yml")
        @@contacts = YAML.load_file("contacts.yml")
      end
+   end
 
-=begin
-     if File.exist?("contacts.csv")
-     @@contacts = CSV.read('contactBook.csv')
-   end #def (open)
-=end
-end
+
    def save
      File.open("contacts.yml", "w") do |file|
        file.write(@@contacts.to_yaml)
      end #file.open
-=begin
-     File.open("contactBook.csv", "w") do |file|
-       for i in 0..@@contacts.length-1
-       file.write(@@contacts[i])
-       file.write(@@contacts[i].getfirstName)
-       end
-     end #file.open
-=end
    end
 
- def isAlpha(word)
-   if /\d/.match( word)
-     return false
-   else
-     return true
-   end
-end
-
-
-   def isNum(num)
-     if /\d/.match( num)
-        return true
-     else
-      return false
-
-     end
-   end
 
    def addContact
+
      puts "Enter First Name"
      fname=gets.chomp
-     while !( isAlpha(fname)) do
-       puts "Invalid name"
-       puts "Enter First name"
+     while !(Validate.isAlpha(fname)) do
+
        fname=gets.chomp
      end
 
      puts "Enter Last Name"
      lname=gets.chomp
 
-     while !( isAlpha(lname)) do
-       puts "Invalid name"
-       puts "Enter Last name"
-       lname=gets.chomp
+     while !(Validate.isAlpha(lname)) do
+      lname=gets.chomp
      end
 
      isExists=false
@@ -82,38 +57,33 @@ end
      else
        puts "Enter phone number"
        pnum=gets.chomp
-       while !(isNum(pnum)) do
-         puts "Invalid Phone Number"
-         puts "Enter Phone numebr"
+       while !(Validate.isNum(pnum)) do
+
          pnum=gets.chomp
        end
 
        puts "Enter Address \n Street"
        street=gets.chomp
-       while !( isAlpha(street) )do
-         puts "Invalid Street"
-         puts "Enter Street"
+       while !( Validate.isAlpha(street) )do
+
          street=gets.chomp
        end
        puts"city"
        city=gets.chomp
-       while !( isAlpha(city)) do
-         puts "Invalid city"
-         puts "Enter city"
+       while !( Validate.isAlpha(city)) do
+
          city=gets.chomp
        end
        puts "state"
        state=gets.chomp
-       while !( isAlpha(state)) do
-         puts "Invalid state"
-         puts "Enter state"
+       while !( Validate.isAlpha(state)) do
+
          state=gets.chomp
        end
        puts "zip "
        zip=gets.chomp
-       while !( isNum(zip)) do
-         puts "Invalid Zip "
-         puts "Enter Zip"
+       while !( Validate.isNum(zip)) do
+
          zip=gets.chomp
        end
    end
