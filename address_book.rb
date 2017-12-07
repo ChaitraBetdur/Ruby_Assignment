@@ -9,7 +9,6 @@ require "validate"
 
 class AddressBook
 include Validate
-  puts Validate::VAR
    @@contacts=Array.new
 
    def open
@@ -22,77 +21,57 @@ include Validate
    def save
      File.open("contacts.yml", "w") do |file|
        file.write(@@contacts.to_yaml)
-     end #file.open
+     end
    end
 
 
    def addContact
-
+    @index=-1
      puts "Enter First Name"
      fname=gets.chomp
      while !(Validate.isAlpha(fname)) do
-
        fname=gets.chomp
      end
-
      puts "Enter Last Name"
      lname=gets.chomp
-
      while !(Validate.isAlpha(lname)) do
       lname=gets.chomp
      end
-
-     isExists=false
-     for i in 0..@@contacts.length-1
-       if fname==@@contacts[i].getfirstName and lname==@@contacts[i].getlastName
-
-         isExists=true
-         break
-       end
-     end
-     if isExists
+      @index=checkIfContactAvailable(fname,lname)
+     if (@index>=0)
        puts "Contact already Exists"
-         displayContactByIndex(i)
-
+       displayContactByIndex(@index)
      else
        puts "Enter phone number"
-       pnum=gets.chomp
+       pnum = gets.chomp
        while !(Validate.isNum(pnum)) do
-
-         pnum=gets.chomp
+         pnum = gets.chomp
        end
-
        puts "Enter Address \n Street"
-       street=gets.chomp
+       street = gets.chomp
        while !( Validate.isAlpha(street) )do
-
-         street=gets.chomp
+         street = gets.chomp
        end
        puts"city"
-       city=gets.chomp
+       city = gets.chomp
        while !( Validate.isAlpha(city)) do
-
-         city=gets.chomp
+         city = gets.chomp
        end
        puts "state"
-       state=gets.chomp
+       state = gets.chomp
        while !( Validate.isAlpha(state)) do
-
-         state=gets.chomp
+         state = gets.chomp
        end
        puts "zip "
        zip=gets.chomp
        while !( Validate.isNum(zip)) do
-
-         zip=gets.chomp
+         zip = gets.chomp
        end
    end
        addr = Address.new(street,city,state,zip)
        @@contacts.push(Person.new(fname,lname,pnum,addr))
 
-       end
-
-
+   end
 
 
    def displayContactByIndex(i)
@@ -107,25 +86,32 @@ include Validate
 
     def displayAllContacts
 
-      for i in 0..@@contacts.length-1
-        displayContactByIndex(i)
+      size = @@contacts.length
+      if(size == 0)
+        puts "No Contacts to display"
+      else
+        for i in 0..@@contacts.length-1
+          displayContactByIndex(i)
+        end
       end
+
     end
 
   def searchContact
+
     puts "Enter name to Search details"
-    fname=gets.chomp
-    counts=occurance(fname)
-    #print counts
-    if(counts==0)
+    fname = gets.chomp
+    counts = occurance(fname)
+    if(counts == 0)
       puts "No Such Contact"
     else
      for i in 0..@@contacts.length-1
-       if fname==@@contacts[i].getfirstName
+       if fname == @@contacts[i].getfirstName
         displayContactByIndex(i)
        end
      end
     end
+
   end
 
   def sortContacts
@@ -138,122 +124,102 @@ include Validate
 
 
   def deleteContact
+
+    @index = -1
     puts "Enter Contact name to Delete"
     fname = gets.chomp
-     counts=occurance(fname)
+    puts "Enter last Name"
+    lname = gets.chomp
+    @index = checkIfContactAvailable(fname,lname)
+    if(@index != -1)
+      puts "Are you sure? You want to delete #{fname}? Y/N"
+      delete = gets.chomp
+      if(delete = 'y'|| delete = 'Y')
+        puts "#{@@contacts[@index].getfirstName} is deleted Successfully"
+        @@contacts.delete(@@contacts[@index])
+      end
+    else
+      puts "No such Contact"
+    end
 
-      if(counts==0)
-        puts "No Such Contact"
-      elsif(counts>1)
-        puts "Enter last Name"
-        lname=gets.chomp
-        isExists=false
-        for i in 0..@@contacts.length-1
-          if fname==@@contacts[i].getfirstName and lname==@@contacts[i].getlastName
-            isExists=true
-            puts "Are you sure? You want to delete #{fname}? Y/N"
-            delete=gets.chomp
-            if(delete='y'||delete='Y')
-              puts "#{@@contacts[i].getfirstName} is deleted Successfully"
-              @@contacts.delete(@@contacts[i])
-
-            end
-            break
-          end
-        end
-        if(isExists==false)
-          puts "No such Contact"
-        end
-      else
-        for i in 0..@@contacts.length-1
-          if fname==@@contacts[i].getfirstName
-            puts "Are you sure? You want to delete #{fname}? Y/N"
-            delete=gets.chomp
-            if(delete='y'||delete='Y')
-            puts "#{@@contacts[i].getfirstName} is deleted Successfully"
-            @@contacts.delete(@@contacts[i])
-            end
-            break
-          end
-
-        end
-
-        end
-  end
+   end
 
 #No of occurance of a contact name.
   def occurance(fname)
-    counts=0
+
+    counts = 0
     for i in 0..@@contacts.length-1
-      if fname==@@contacts[i].getfirstName
+      if fname == @@contacts[i].getfirstName
         counts+=1
       end
     end
-      counts
+   return counts
+
   end
 
 
   def editContact
+
+    @index = -1
     puts "Enter Contact name to Edit"
     fname = gets.chomp
-    counts=occurance(fname)
-    if (counts==0)
-      puts "No such contact"
-    elsif(counts>1)
-      puts "Enter Last name"
-      lname=gets.chomp
-      for i in 0..@@contacts.length-1
-        if fname==@@contacts[i].getfirstName and lname==@@contacts[i].getlastName
-          displayContactByIndex(i)
-          @index=i
-          break
-        end
-      end
+    puts "Enter Last name"
+    lname = gets.chomp
+    @index = checkIfContactAvailable(fname,lname)
+      if(@index!=-1)
       editByField(@index)
-    else
-      for i in 0..@@contacts.length-1
-        if fname==@@contacts[i].getfirstName
-          displayContactByIndex(i)
-          @index=i
-          break
-        end
+      else
+      puts "No such Contact"
       end
-      editByField(@index)
-    end
+
   end
 
+def checkIfContactAvailable(fname,lname)
+
+  for i in 0..@@contacts.length-1
+    if fname == @@contacts[i].getfirstName and lname == @@contacts[i].getlastName
+      displayContactByIndex(i)
+      @index = i
+      break
+    end
+  end
+  return @index
+
+end
 
   def editByField(index)
+
     puts "Enter your choice"
     puts "1.Edit First Name and Last name\n2.Edit Phone Number\n3.Edit Address"
     @choice =gets.chomp
     case @choice
       when "1"
         puts "Enter First Name"
-        fname=gets.chomp
+        fname = gets.chomp
         puts "Enter Last name"
-        lname=gets.chomp
+        lname = gets.chomp
         @@contacts[index].setfirstName(fname)
         @@contacts[index].setlastName(lname)
       when "2"
         puts "Enter Phone Number"
-        pnum=gets.chomp
+        pnum = gets.chomp
         @@contacts[index].setphoneNum(pnum)
       when "3"
         puts "Enter Address\nStreet"
-        street=gets.chomp
+        street = gets.chomp
         puts "city"
-        city=gets.chomp
+        city = gets.chomp
         puts "state"
-        state=gets.chomp
+        state = gets.chomp
         puts "zip"
-        zip=gets.chomp
+        zip = gets.chomp
         @@contacts[index].getAddress.setStreet(street)
         @@contacts[index].getAddress.setCity(city)
         @@contacts[index].getAddress.setState(state)
         @@contacts[index].getAddress.setZip(zip)
     end
   end
+
 end
 
 
