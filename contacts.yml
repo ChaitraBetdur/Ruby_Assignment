@@ -1,0 +1,10 @@
+---
+- !ruby/object:Person
+  first_name: Chaitra
+  last_name: Betdur
+  phone_number: '123456789'
+  address: !ruby/object:Address
+    street: Sanmargnagr
+    city: Hubbli
+    state: Karnataka
+    zip: '580030'
